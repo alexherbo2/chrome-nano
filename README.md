@@ -1,17 +1,8 @@
 # nano for Chrome
 
-A browser extension that lets you search tabs with a dynamic menu program—such as [nano].
+A browser extension that lets you open text areas in webpages with a text editor program—such as [nano].
 
-[nano]: https://tools.suckless.org/nano/
-
-## Features
-
-- Tab search.
-- Recently closed tab search.
-- Bookmark search.
-- History search.
-- Download search.
-- Combined search.
+[nano]: https://nano-editor.org
 
 ## Installation
 

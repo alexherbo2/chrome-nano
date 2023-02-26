@@ -1,31 +1,31 @@
 {
   "name": "nano",
   "version": "0.1.0",
-  "description": "Tab search, selection and beyond with a dynamic menu program.",
+  "description": "Open videos in webpages with a media player program.",
   "homepage_url": "https://github.com/taupiqueur/chrome-nano",
   "manifest_version": 3,
   "background": {
     "type": "module",
     "service_worker": "src/background.js"
   },
-  "permissions": ["bookmarks", "downloads", "history", "nativeMessaging", "sessions", "storage", "tabGroups", "tabs"],
+  "permissions": ["activeTab", "contextMenus", "nativeMessaging", "scripting", "storage"],
   "action": {
-    "default_title": "Search tabs with nano"
+    "default_title": "Open with nano"
   },
   "options_ui": {
     "page": "src/options/options.html"
   },
   "icons": {
-    "16": "assets/suckless-logo@16px.png",
-    "32": "assets/suckless-logo@32px.png",
-    "48": "assets/suckless-logo@48px.png",
-    "128": "assets/suckless-logo@128px.png"
+    "16": "assets/nano-logo@16px.png",
+    "32": "assets/nano-logo@32px.png",
+    "48": "assets/nano-logo@48px.png",
+    "128": "assets/nano-logo@128px.png"
   },
   "commands": {
     "_execute_action": {
       "suggested_key": {
-        "default": "Alt+Space",
-        "windows": "Ctrl+Space"
+        "default": "Ctrl+I",
+        "mac": "MacCtrl+I"
       }
     }
   }

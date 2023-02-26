@@ -1,26 +1,20 @@
-// Pipes items through the given external filter program.
-// Returns a list of matching items.
-export async function nano(command, args, items, template) {
-  const menu = new Map(
-    items.map((item, index) => [template(item, index), item])
-  )
-  const input = Array.from(menu.keys()).join('\n')
-  const result = await chrome.runtime.sendNativeMessage('shell', {
-    command,
-    args,
+// Opens specified input with the given text editor.
+// Reads input from standard input and opens the results in the default text editor.
+// Also useful for piping output to open and having it open in the default text editor.
+// Returns the command result.
+export async function nano(command, args, urls) {
+  return chrome.runtime.sendNativeMessage('shell', {
+    command: 'sh',
+    args: ['-c', `file=$(mktemp) && trap 'rm -f "$file"' EXIT && cat > "$file" && "$@" "$file" && [ $? -eq 0 ] && cat "$file"`, '--', command, ...args],
     input,
     output: true
   })
-  const keys = result.output.split('\n')
-  const selection = keys.filter(key => menu.has(key)).map(key => menu.get(key))
-
-  return selection
 }
 
 export default {
-  command: 'nano',
-  args: [],
-  run(items, template) {
-    return nano(this.command, this.args, items, template)
+  command: 'xterm',
+  args: ['-e', 'nano'],
+  open(urls) {
+    return nano(this.command, this.args, urls)
   }
 }

@@ -2,9 +2,9 @@
 
 ## Usage
 
-`Alt+Space` (`Ctrl+Space` on Windows) is the main keyboard shortcut.
+`Ctrl+I` is the main keyboard shortcut.
 
-Use it to search and activate suggestions.
+Use it to open text areas in webpages with nano.
 
 ### Configure keyboard shortcuts
 
@@ -12,7 +12,7 @@ Navigate to `chrome://extensions/shortcuts` to configure keyboard shortcuts.
 
 ### Configure the dynamic menu program
 
-You can also configure the dynamic menu program by importing and exporting settings
+You can also configure the text editor program by importing and exporting settings
 in the **Options** page—Right-click the nano toolbar button and select **Options**.
 
 Example configuration:
@@ -20,8 +20,8 @@ Example configuration:
 ``` json
 {
   "nano": {
-    "command": "nano",
-    "args": []
+    "command": "xterm",
+    "args": ["-e", "nano"]
   }
 }
 ```
@@ -29,11 +29,17 @@ Example configuration:
 ``` json
 {
   "nano": {
-    "command": "sh",
-    "args": [
-      "-c",
-      "cat > /tmp/stdin && alacritty -e sh -c 'fzy < /tmp/stdin > /tmp/stdout' && [ -s /tmp/stdout ] && cat /tmp/stdout"
-    ]
+    "command": "alacritty",
+    "args": ["-e", "hx"]
+  }
+}
+```
+
+``` json
+{
+  "nano": {
+    "command": "open",
+    "args": ["-n", "-W"]
   }
 }
 ```
