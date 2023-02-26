@@ -1,7 +1,7 @@
 {
   "name": "nano",
   "version": "0.1.0",
-  "description": "Open videos in webpages with a media player program.",
+  "description": "Edit text areas in webpages with a text editor program.",
   "homepage_url": "https://github.com/taupiqueur/chrome-nano",
   "manifest_version": 3,
   "background": {

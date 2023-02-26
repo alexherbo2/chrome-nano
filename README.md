@@ -1,6 +1,6 @@
 # nano for Chrome
 
-A browser extension that lets you open text areas in webpages with a text editor program—such as [nano].
+A browser extension that lets you edit text areas in webpages with a text editor program—such as [nano].
 
 [nano]: https://nano-editor.org
 
