@@ -65,6 +65,7 @@ function onAction(tab) {
       port.onMessage.addListener((result) => {
         if (result.status === 0) {
           activeElement.value = result.output
+          activeElement.dispatchEvent(new Event('input'))
         }
       })
       port.postMessage({
