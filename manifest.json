@@ -1,8 +1,8 @@
 {
-  "name": "dmenu",
+  "name": "nano",
   "version": "0.1.0",
   "description": "Tab search, selection and beyond with a dynamic menu program.",
-  "homepage_url": "https://github.com/taupiqueur/chrome-dmenu",
+  "homepage_url": "https://github.com/taupiqueur/chrome-nano",
   "manifest_version": 3,
   "background": {
     "type": "module",
@@ -10,7 +10,7 @@
   },
   "permissions": ["bookmarks", "downloads", "history", "nativeMessaging", "sessions", "storage", "tabGroups", "tabs"],
   "action": {
-    "default_title": "Search tabs with dmenu"
+    "default_title": "Search tabs with nano"
   },
   "options_ui": {
     "page": "src/options/options.html"

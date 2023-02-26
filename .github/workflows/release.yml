@@ -42,4 +42,4 @@ jobs:
         run: make release version=nightly
 
       - name: Upload release
-        run: gh release upload nightly releases/chrome-dmenu-nightly.zip
+        run: gh release upload nightly releases/chrome-nano-nightly.zip

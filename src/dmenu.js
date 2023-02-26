@@ -1,6 +1,6 @@
 // Pipes items through the given external filter program.
 // Returns a list of matching items.
-export async function dmenu(command, args, items, template) {
+export async function nano(command, args, items, template) {
   const menu = new Map(
     items.map((item, index) => [template(item, index), item])
   )
@@ -18,9 +18,9 @@ export async function dmenu(command, args, items, template) {
 }
 
 export default {
-  command: 'dmenu',
+  command: 'nano',
   args: [],
   run(items, template) {
-    return dmenu(this.command, this.args, items, template)
+    return nano(this.command, this.args, items, template)
   }
 }

@@ -1,8 +1,8 @@
-# dmenu for Chrome
+# nano for Chrome
 
-A browser extension that lets you search tabs with a dynamic menu program—such as [dmenu].
+A browser extension that lets you search tabs with a dynamic menu program—such as [nano].
 
-[dmenu]: https://tools.suckless.org/dmenu/
+[nano]: https://tools.suckless.org/nano/
 
 ## Features
 
@@ -23,7 +23,7 @@ Requires [chrome-shell] for running shell commands.
 
 Download the [Nightly builds].
 
-[Nightly builds]: https://github.com/taupiqueur/chrome-dmenu/releases/nightly
+[Nightly builds]: https://github.com/taupiqueur/chrome-nano/releases/nightly
 
 ### Build from source
 
@@ -33,8 +33,8 @@ Install [curl] and [Inkscape] to get and build the images.
 [Inkscape]: https://inkscape.org
 
 ``` sh
-git clone https://github.com/taupiqueur/chrome-dmenu.git
-cd chrome-dmenu
+git clone https://github.com/taupiqueur/chrome-nano.git
+cd chrome-nano
 make build
 ```
 
@@ -66,6 +66,6 @@ Report bugs on the [issue tracker],
 ask questions on the [IRC channel],
 send patches on the [mailing list].
 
-[Issue tracker]: https://github.com/taupiqueur/chrome-dmenu/issues
+[Issue tracker]: https://github.com/taupiqueur/chrome-nano/issues
 [IRC channel]: https://web.libera.chat/gamja/#taupiqueur
-[Mailing list]: https://github.com/taupiqueur/chrome-dmenu/pulls
+[Mailing list]: https://github.com/taupiqueur/chrome-nano/pulls

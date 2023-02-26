@@ -1,6 +1,6 @@
 {
-  "dmenu": {
-    "command": "dmenu",
+  "nano": {
+    "command": "nano",
     "args": []
   }
 }

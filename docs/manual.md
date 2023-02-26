@@ -13,14 +13,14 @@ Navigate to `chrome://extensions/shortcuts` to configure keyboard shortcuts.
 ### Configure the dynamic menu program
 
 You can also configure the dynamic menu program by importing and exporting settings
-in the **Options** page—Right-click the dmenu toolbar button and select **Options**.
+in the **Options** page—Right-click the nano toolbar button and select **Options**.
 
 Example configuration:
 
 ``` json
 {
-  "dmenu": {
-    "command": "dmenu",
+  "nano": {
+    "command": "nano",
     "args": []
   }
 }
@@ -28,7 +28,7 @@ Example configuration:
 
 ``` json
 {
-  "dmenu": {
+  "nano": {
     "command": "sh",
     "args": [
       "-c",

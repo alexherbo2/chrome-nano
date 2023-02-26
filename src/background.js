@@ -4,7 +4,7 @@
 // Service workers: https://developer.chrome.com/docs/extensions/mv3/service_workers/
 // Messaging: https://developer.chrome.com/docs/extensions/mv3/messaging/
 
-import dmenu from './dmenu.js'
+import nano from './nano.js'
 import { getSuggestions, activateSuggestion } from './suggestion_engine.js'
 import optionsWorker from './options/service_worker.js'
 
@@ -30,20 +30,20 @@ async function onUpdate(previousVersion) {
 
 // Handles option changes.
 function onOptionsChange(changes, areaName) {
-  Object.assign(dmenu, changes.dmenu.newValue)
+  Object.assign(nano, changes.nano.newValue)
 }
 
 // Handles the browser action.
 async function onAction(tab) {
   const suggestions = await getSuggestions()
-  const selection = await dmenu.run(suggestions, DMENU_TEMPLATE)
+  const selection = await nano.run(suggestions, DMENU_TEMPLATE)
   for (const suggestion of selection) {
     activateSuggestion(suggestion)
   }
 }
 
-// Configure dmenu.
-chrome.storage.sync.get(options => Object.assign(dmenu, options.dmenu))
+// Configure nano.
+chrome.storage.sync.get(options => Object.assign(nano, options.nano))
 
 // Handle the initial setup when the extension is first installed or updated to a new version.
 // Reference: https://developer.chrome.com/docs/extensions/reference/runtime/#event-onInstalled

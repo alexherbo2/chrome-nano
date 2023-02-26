@@ -1,5 +1,5 @@
 # General options
-name = chrome-dmenu
+name = chrome-nano
 version = $(shell git describe --tags --always)
 
 all: assets/suckless-logo@16px.png assets/suckless-logo@32px.png assets/suckless-logo@48px.png assets/suckless-logo@128px.png

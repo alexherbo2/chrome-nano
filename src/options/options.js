@@ -64,7 +64,7 @@ async function exportOptions() {
   const options = await getOptions()
   const content = JSON.stringify(options, null, 2)
   const dateString = getISODateString(new Date)
-  saveFile(content, `dmenu-options-${dateString}.json`, 'application/json')
+  saveFile(content, `nano-options-${dateString}.json`, 'application/json')
 }
 
 // Saves file.
