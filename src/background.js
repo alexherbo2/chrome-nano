@@ -40,33 +40,35 @@ function onOptionsChange(changes, areaName) {
 
 // Handles the browser action.
 async function onAction(tab) {
-  const [{ documentId, result: [uniqueSelector, input, selectionStart, selectionEnd, selectionDirection] }] = await chrome.scripting.executeScript({
+  const [injectionResult] = await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
     func: () => {
       const computeSelector = element => (
         element === document.documentElement
           ? document.documentElement.tagName
           : `${computeSelector(element.parentElement)} > :nth-child(${Array.from(element.parentElement.children).indexOf(element) + 1})`
       )
-      const uniqueSelector = computeSelector(document.activeElement)
-      const { value, selectionStart, selectionEnd, selectionDirection } = document.activeElement
-      return [uniqueSelector, value, selectionStart, selectionEnd, selectionDirection]
-    },
-    target: { tabId: tab.id }
+      return [computeSelector(document.activeElement), document.activeElement.value]
+    }
   })
-  const result = await nano.open(input)
-  if (result.status === 0) {
-    chrome.scripting.executeScript({
-      func: (uniqueSelector, output, selectionStart, selectionEnd, selectionDirection) => {
-        const activeElement = document.querySelector(uniqueSelector)
-        const boundSelection = activeElement.setSelectionRange.bind(activeElement, activeElement.selectionStart, activeElement.selectionEnd, activeElement.selectionDirection)
-        activeElement.value = output
-        boundSelection()
-        activeElement.dispatchEvent(new Event('input'))
-      },
-      args: [uniqueSelector, result.output, selectionStart, selectionEnd, selectionDirection],
-      target: { tabId: tab.id, documentIds: [documentId] }
-    })
+  const [uniqueSelector, input] = injectionResult.result
+  const commandResult = await nano.open(input)
+
+  if (commandResult.status !== 0) {
+    return
   }
+
+  chrome.scripting.executeScript({
+    target: { tabId: tab.id, documentIds: [injectionResult.documentId] },
+    func: (uniqueSelector, output) => {
+      const activeElement = document.querySelector(uniqueSelector)
+      const boundSelection = activeElement.setSelectionRange.bind(activeElement, activeElement.selectionStart, activeElement.selectionEnd, activeElement.selectionDirection)
+      activeElement.value = output
+      boundSelection()
+      activeElement.dispatchEvent(new Event('input'))
+    },
+    args: [uniqueSelector, commandResult.output]
+  })
 }
 
 // Handles the context menu on click.
