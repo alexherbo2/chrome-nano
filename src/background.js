@@ -38,43 +38,35 @@ function onOptionsChange(changes, areaName) {
   Object.assign(nano, changes.nano.newValue)
 }
 
-// Handles a new connection when opening the Options page.
-function onConnect(port) {
-  port.onMessage.addListener(onMessage)
-}
-
-// Handles message by using a discriminator field.
-// Each message has a `type` field, and the rest of the fields, and their meaning, depend on its value.
-// Reference: https://crystal-lang.org/api/master/JSON/Serializable.html#discriminator-field
-function onMessage(message, port) {
-  nano.open(message.input).then((result) => port.postMessage(result))
-}
-
 // Handles the browser action.
-function onAction(tab) {
-  chrome.scripting.executeScript({
-    func: _ => {
+async function onAction(tab) {
+  const [{ documentId, result: [uniqueSelector, input, selectionStart, selectionEnd, selectionDirection] }] = await chrome.scripting.executeScript({
+    func: () => {
       const computeSelector = element => (
         element === document.documentElement
           ? document.documentElement.tagName
-          : `${computeSelector(element.parentElement)} > :nth-child(${Array.from(element.parentElement.children).indexOf(element)})`
+          : `${computeSelector(element.parentElement)} > :nth-child(${Array.from(element.parentElement.children).indexOf(element) + 1})`
       )
-      // Open a channel to communicate with the service worker.
-      const port = chrome.runtime.connect({ name: 'editor' })
-      const activeElement = document.activeElement
-      port.onMessage.addListener((result) => {
-        if (result.status === 0) {
-          activeElement.value = result.output
-          activeElement.dispatchEvent(new Event('input'))
-        }
-      })
-      port.postMessage({
-        type: 'open',
-        input: activeElement.value
-      })
+      const uniqueSelector = computeSelector(document.activeElement)
+      const { value, selectionStart, selectionEnd, selectionDirection } = document.activeElement
+      return [uniqueSelector, value, selectionStart, selectionEnd, selectionDirection]
     },
     target: { tabId: tab.id }
   })
+  const result = await nano.open(input)
+  if (result.status === 0) {
+    chrome.scripting.executeScript({
+      func: (uniqueSelector, output, selectionStart, selectionEnd, selectionDirection) => {
+        const activeElement = document.querySelector(uniqueSelector)
+        const boundSelection = activeElement.setSelectionRange.bind(activeElement, activeElement.selectionStart, activeElement.selectionEnd, activeElement.selectionDirection)
+        activeElement.value = output
+        boundSelection()
+        activeElement.dispatchEvent(new Event('input'))
+      },
+      args: [uniqueSelector, result.output, selectionStart, selectionEnd, selectionDirection],
+      target: { tabId: tab.id, documentIds: [documentId] }
+    })
+  }
 }
 
 // Handles the context menu on click.
@@ -116,9 +108,6 @@ chrome.contextMenus.onClicked.addListener(onMenuItemClicked)
 // Reference: https://developer.chrome.com/docs/extensions/mv3/messaging/#connect
 chrome.runtime.onConnect.addListener((port) => {
   switch (port.name) {
-    case 'editor':
-      onConnect(port)
-      break
     case 'options':
       optionsWorker.onConnect(port)
       break
