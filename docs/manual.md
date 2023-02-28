@@ -4,13 +4,13 @@
 
 `Ctrl+I` is the main keyboard shortcut.
 
-Use it to open text areas in webpages with nano.
+Use it to edit text areas in webpages with nano.
 
 ### Configure keyboard shortcuts
 
 Navigate to `chrome://extensions/shortcuts` to configure keyboard shortcuts.
 
-### Configure the dynamic menu program
+### Configure the text editor program
 
 You can also configure the text editor program by importing and exporting settings
 in the **Options** page—Right-click the nano toolbar button and select **Options**.
