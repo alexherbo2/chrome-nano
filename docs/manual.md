@@ -29,15 +29,6 @@ Example configuration:
 ``` json
 {
   "nano": {
-    "command": "alacritty",
-    "args": ["-e", "hx"]
-  }
-}
-```
-
-``` json
-{
-  "nano": {
     "command": "open",
     "args": ["-n", "-W"]
   }
