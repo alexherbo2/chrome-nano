@@ -20,7 +20,7 @@ async function editTextArea(tab) {
   })
   const commandResult = await this.open(input)
   if (commandResult.status === 0) {
-    chrome.scripting.executeScript({
+    await chrome.scripting.executeScript({
       target: {
         tabId: tab.id,
         documentIds: [documentId]
