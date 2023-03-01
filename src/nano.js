@@ -13,13 +13,18 @@ export async function nano(command, args, input) {
 
 async function editTextArea(tab) {
   const [{ documentId, result: [selector, input] }] = await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
+    target: {
+      tabId: tab.id
+    },
     func: getTextInput
   })
   const commandResult = await this.open(input)
   if (commandResult.status === 0) {
     chrome.scripting.executeScript({
-      target: { tabId: tab.id, documentIds: [documentId] },
+      target: {
+        tabId: tab.id,
+        documentIds: [documentId]
+      },
       func: setTextOutput,
       args: [selector, commandResult.output]
     })
