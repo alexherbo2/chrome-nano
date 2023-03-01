@@ -12,7 +12,7 @@ export async function nano(command, args, input) {
 }
 
 async function editTextArea(tab) {
-  const [{ documentId, result: [uniqueSelector, input] }] = await chrome.scripting.executeScript({
+  const [{ documentId, result: [selector, input] }] = await chrome.scripting.executeScript({
     target: { tabId: tab.id },
     func: getTextInput
   })
@@ -21,7 +21,7 @@ async function editTextArea(tab) {
     chrome.scripting.executeScript({
       target: { tabId: tab.id, documentIds: [documentId] },
       func: setTextOutput,
-      args: [uniqueSelector, commandResult.output]
+      args: [selector, commandResult.output]
     })
   }
 }
@@ -35,8 +35,8 @@ function getTextInput() {
   return [computeSelector(document.activeElement), document.activeElement.value]
 }
 
-function setTextOutput(uniqueSelector, output) {
-  const activeElement = document.querySelector(uniqueSelector)
+function setTextOutput(selector, output) {
+  const activeElement = document.querySelector(selector)
   const boundSelection = activeElement.setSelectionRange.bind(activeElement, activeElement.selectionStart, activeElement.selectionEnd, activeElement.selectionDirection)
   activeElement.value = output
   boundSelection()
