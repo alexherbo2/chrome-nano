@@ -39,41 +39,13 @@ function onOptionsChange(changes, areaName) {
 }
 
 // Handles the browser action.
-async function onAction(tab) {
-  const [injectionResult] = await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: () => {
-      const computeSelector = element => (
-        element === document.documentElement
-          ? document.documentElement.tagName
-          : `${computeSelector(element.parentElement)} > :nth-child(${Array.from(element.parentElement.children).indexOf(element) + 1})`
-      )
-      return [computeSelector(document.activeElement), document.activeElement.value]
-    }
-  })
-  const [uniqueSelector, input] = injectionResult.result
-  const commandResult = await nano.open(input)
-
-  if (commandResult.status !== 0) {
-    return
-  }
-
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id, documentIds: [injectionResult.documentId] },
-    func: (uniqueSelector, output) => {
-      const activeElement = document.querySelector(uniqueSelector)
-      const boundSelection = activeElement.setSelectionRange.bind(activeElement, activeElement.selectionStart, activeElement.selectionEnd, activeElement.selectionDirection)
-      activeElement.value = output
-      boundSelection()
-      activeElement.dispatchEvent(new Event('input'))
-    },
-    args: [uniqueSelector, commandResult.output]
-  })
+function onAction(tab) {
+  nano.editTextArea(tab)
 }
 
 // Handles the context menu on click.
 function onMenuItemClicked(info, tab) {
-  onAction(tab)
+  nano.editTextArea(tab)
 }
 
 // Configure nano.
