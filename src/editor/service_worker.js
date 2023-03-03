@@ -31,7 +31,6 @@ async function onUpdate(previousVersion) {
 
 // Handles a new connection when the popup shows up.
 function onConnect(port) {
-  popupIsOpen = true
   port.onDisconnect.addListener(onDisconnect)
   port.onMessage.addListener(onMessage)
 }
