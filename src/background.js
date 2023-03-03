@@ -29,16 +29,6 @@ function onOptionsChange(changes, areaName) {
   Object.assign(nano, changes.nano.newValue)
 }
 
-// Handles the browser action.
-function onAction(tab) {
-  nano.editTextArea(tab)
-}
-
-// Handles the context menu on click.
-function onMenuItemClicked(info, tab) {
-  nano.editTextArea(tab)
-}
-
 // Configure nano.
 chrome.storage.sync.get(options => Object.assign(nano, options.nano))
 
@@ -62,11 +52,11 @@ chrome.storage.onChanged.addListener(onOptionsChange)
 
 // Handle the browser action on click.
 // Reference: https://developer.chrome.com/docs/extensions/reference/action/#event-onClicked
-chrome.action.onClicked.addListener(onAction)
+chrome.action.onClicked.addListener(editorWorker.onAction)
 
 // Handle the context menu on click.
 // Reference: https://developer.chrome.com/docs/extensions/reference/contextMenus/#event-onClicked
-chrome.contextMenus.onClicked.addListener(onMenuItemClicked)
+chrome.contextMenus.onClicked.addListener(editorWorker.onMenuItemClicked)
 
 // Handle long-lived connections.
 // Use the channel name to distinguish different types of connections.
