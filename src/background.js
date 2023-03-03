@@ -5,20 +5,11 @@
 // Messaging: https://developer.chrome.com/docs/extensions/mv3/messaging/
 
 import nano from './nano.js'
+import editorWorker from './editor/service_worker.js'
 import optionsWorker from './options/service_worker.js'
 
 // Retrieve the default config.
 const configPromise = fetch('config.json').then(response => response.json())
-
-// Adds items to the browser’s context menu.
-// Reference: https://developer.chrome.com/docs/extensions/reference/contextMenus/
-function createMenuItems() {
-  chrome.contextMenus.create({
-    id: 'open-nano',
-    title: 'Open with nano',
-    contexts: ['editable']
-  })
-}
 
 // Handles the initial setup when the extension is first installed.
 async function onInstall() {
@@ -62,7 +53,7 @@ chrome.runtime.onInstalled.addListener((details) => {
       onUpdate(details.previousVersion)
       break
   }
-  createMenuItems()
+  editorWorker.createMenuItems()
 })
 
 // Handle option changes.
@@ -82,6 +73,9 @@ chrome.contextMenus.onClicked.addListener(onMenuItemClicked)
 // Reference: https://developer.chrome.com/docs/extensions/mv3/messaging/#connect
 chrome.runtime.onConnect.addListener((port) => {
   switch (port.name) {
+    case 'editor':
+      editorWorker.onConnect(port)
+      break
     case 'options':
       optionsWorker.onConnect(port)
       break
