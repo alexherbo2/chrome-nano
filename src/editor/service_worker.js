@@ -38,7 +38,6 @@ function onConnect(port) {
 
 // Handles disconnection when the popup goes away.
 function onDisconnect(port) {
-  popupIsOpen = false
 }
 
 // Handles message by using a discriminator field.
