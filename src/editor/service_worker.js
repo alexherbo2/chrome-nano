@@ -62,7 +62,7 @@ function onMenuItemClicked(info, tab) {
   chrome.scripting.executeScript({
     target: {
       tabId: tab.id,
-      frameId: info.frameId
+      frameIds: [info.frameId]
     },
     func: editTextArea
   })
