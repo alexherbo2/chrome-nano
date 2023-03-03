@@ -14,7 +14,6 @@ export async function nano(command, args, input) {
 export default {
   command: 'xterm',
   args: ['-e', 'nano'],
-  editTextArea,
   open(input) {
     return nano(this.command, this.args, input)
   }
