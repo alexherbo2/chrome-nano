@@ -106,8 +106,9 @@ async function editTextArea() {
             break
           }
           case 'Range': {
-            const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selection.toString() })
-            if (result.status === 0 && result.output.length > 1) {
+            const selectedText = selection.toString()
+            const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
+            if (result.status === 0 && result.output.length > 1 && result.output !== selectedText) {
               await navigator.clipboard.writeText(result.output)
             }
             break
