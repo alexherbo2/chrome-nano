@@ -16,7 +16,7 @@ function createMenuItems() {
   chrome.contextMenus.create({
     id: 'open-nano',
     title: 'Open with nano',
-    contexts: ['editable']
+    contexts: ['editable', 'selection']
   })
 }
 
@@ -62,14 +62,30 @@ function onAction(tab) {
 }
 
 // Handles the context menu on click.
-function onMenuItemClicked(info, tab) {
-  chrome.scripting.executeScript({
-    target: {
-      tabId: tab.id,
-      frameIds: [info.frameId]
-    },
-    func: editTextArea
-  })
+async function onMenuItemClicked(info, tab) {
+  switch (true) {
+    case info.editable:
+      await chrome.scripting.executeScript({
+        target: {
+          tabId: tab.id,
+          frameIds: [info.frameId]
+        },
+        func: editTextArea
+      })
+      break
+    case 'selectionText' in info:
+      const result = await nano.open(info.selectionText)
+      if (result.status === 0 && result.output.length > 1) {
+        await chrome.scripting.executeScript({
+          target: {
+            tabId: tab.id
+          },
+          func: text => navigator.clipboard.writeText(text),
+          args: [result.output]
+        })
+      }
+      break
+  }
 }
 
 async function editTextArea() {
