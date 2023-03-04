@@ -51,7 +51,8 @@ function onMessage(message, port) {
 function onAction(tab) {
   chrome.scripting.executeScript({
     target: {
-      tabId: tab.id
+      tabId: tab.id,
+      allFrames: true
     },
     func: editTextArea
   })
