@@ -71,9 +71,10 @@ function onMenuItemClicked(info, tab) {
 
 // Handles the browser action.
 function editTextArea() {
+  const getActiveElement = (element = document.activeElement) => element.shadowRoot ? getActiveElement(element.shadowRoot.activeElement) : element
   // Open a channel to communicate with the service worker.
   const port = chrome.runtime.connect({ name: 'editor' })
-  const activeElement = document.activeElement
+  const activeElement = getActiveElement()
 
   switch (activeElement.constructor) {
     case HTMLInputElement:
