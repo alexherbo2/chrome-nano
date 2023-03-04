@@ -112,9 +112,22 @@ async function editTextArea() {
         }
       } else {
         const selection = window.getSelection()
-        const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selection.toString() })
-        if (result.status === 0 && result.output.length > 1) {
-          await navigator.clipboard.writeText(result.output)
+        switch (selection.type) {
+          case 'None':
+          case 'Caret': {
+            const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea' })
+            if (result.status === 0 && result.output.length > 1) {
+              await navigator.clipboard.writeText(result.output)
+            }
+            break
+          }
+          case 'Range': {
+            const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selection.toString() })
+            if (result.status === 0 && result.output.length > 1) {
+              await navigator.clipboard.writeText(result.output)
+            }
+            break
+          }
         }
       }
     }
