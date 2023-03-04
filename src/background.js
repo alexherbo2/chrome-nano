@@ -88,13 +88,12 @@ async function editTextArea() {
       }
       break
 
-    default:
-      if (activeElement.isContentEditable) {
-        const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea' })
-        if (result.status === 0) {
-          await navigator.clipboard.writeText(result.output)
-        }
+    default: {
+      const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea' })
+      if (result.status === 0) {
+        await navigator.clipboard.writeText(result.output)
       }
+    }
   }
 }
 
