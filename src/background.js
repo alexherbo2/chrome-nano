@@ -105,9 +105,17 @@ async function editTextArea() {
       break
 
     default: {
-      const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea' })
-      if (result.status === 0 && result.output.length > 1) {
-        await navigator.clipboard.writeText(result.output)
+      if (activeElement.isContentEditable) {
+        const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea' })
+        if (result.status === 0) {
+          await navigator.clipboard.writeText(result.output)
+        }
+      } else {
+        const selection = window.getSelection()
+        const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selection.toString() })
+        if (result.status === 0 && result.output.length > 1) {
+          await navigator.clipboard.writeText(result.output)
+        }
       }
     }
   }
