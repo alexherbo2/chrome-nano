@@ -42,7 +42,7 @@ function onOptionsChange(changes, areaName) {
 function onActionMessage(message, sender, sendResponse) {
   switch (message.action) {
     case 'editTextArea':
-      nano.open(message.input, message.suffix).then(sendResponse)
+      nano.open(message.input).then(sendResponse)
       break
 
     default:
@@ -80,7 +80,7 @@ async function editTextArea() {
     case HTMLInputElement:
     case HTMLTextAreaElement:
       const boundSelection = activeElement.setSelectionRange.bind(activeElement, activeElement.selectionStart, activeElement.selectionEnd, activeElement.selectionDirection)
-      const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: activeElement.value, suffix: '.md' })
+      const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: activeElement.value })
       if (result.status === 0) {
         activeElement.value = result.output
         boundSelection()
@@ -90,11 +90,9 @@ async function editTextArea() {
 
     default:
       if (activeElement.isContentEditable) {
-        const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: activeElement.innerHTML, suffix: '.html' })
+        const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea' })
         if (result.status === 0) {
-          activeElement.innerHTML = result.output
-          boundSelection()
-          activeElement.dispatchEvent(new Event('input'))
+          await navigator.clipboard.writeText(result.output)
         }
       }
   }
