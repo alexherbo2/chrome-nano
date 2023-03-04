@@ -90,7 +90,7 @@ async function editTextArea() {
 
     default: {
       const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea' })
-      if (result.status === 0) {
+      if (result.status === 0 && result.output.length > 1) {
         await navigator.clipboard.writeText(result.output)
       }
     }
