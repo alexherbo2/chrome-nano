@@ -130,7 +130,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ type: 'error', message: 'Unknown request' })
   }
   return true
-}
+})
 
 // Handle long-lived connections.
 // Use the channel name to distinguish different types of connections.
