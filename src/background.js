@@ -73,8 +73,8 @@ function onMenuItemClicked(info, tab) {
 }
 
 async function editTextArea() {
-  const getActiveElement = document => document.activeElement.shadowRoot ? getActiveElement(document.activeElement.shadowRoot) : document.activeElement
-  const activeElement = getActiveElement(document)
+  const getActiveElement = (documentOrShadowRoot = document) => documentOrShadowRoot.activeElement.shadowRoot ? getActiveElement(documentOrShadowRoot.activeElement.shadowRoot) : documentOrShadowRoot.activeElement
+  const activeElement = getActiveElement()
 
   switch (activeElement.constructor) {
     case HTMLInputElement:
@@ -90,9 +90,17 @@ async function editTextArea() {
 
     default: {
       if (activeElement.isContentEditable) {
-        const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea' })
-        if (result.status === 0 && result.output.length > 0 && result.output !== '\n') {
-          await navigator.clipboard.writeText(result.output)
+        const selection = window.getSelection()
+        const ranges = Array(selection.rangeCount).fill(selection).map((selection, index) => selection.getRangeAt(index))
+        selection.selectAllChildren(activeElement)
+        const selectedText = selection.toString()
+        selection.removeAllRanges()
+        for (const range of ranges) {
+          selection.addRange(range)
+        }
+        const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
+        if (result.status === 0 && result.output.length > 0 && result.output !== '\n' && result.output !== selectedText) {
+          activeElement.addEventListener('focus', event => navigator.clipboard.writeText(result.output), { once: true })
         }
       } else {
         const selection = window.getSelection()
