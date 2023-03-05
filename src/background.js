@@ -91,7 +91,7 @@ async function editTextArea() {
     default: {
       if (activeElement.isContentEditable) {
         const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea' })
-        if (result.status === 0) {
+        if (result.status === 0 && result.output.length > 0 && result.output !== '\n') {
           await navigator.clipboard.writeText(result.output)
         }
       } else {
@@ -99,18 +99,12 @@ async function editTextArea() {
         switch (selection.type) {
           case 'None':
           case 'Caret': {
-            const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea' })
-            if (result.status === 0 && result.output.length > 1) {
-              await navigator.clipboard.writeText(result.output)
-            }
+            await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea' })
             break
           }
           case 'Range': {
             const selectedText = selection.toString()
-            const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
-            if (result.status === 0 && result.output.length > 1 && result.output !== selectedText) {
-              await navigator.clipboard.writeText(result.output)
-            }
+            await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
             break
           }
         }
