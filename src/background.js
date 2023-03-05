@@ -73,6 +73,15 @@ function onMenuItemClicked(info, tab) {
 }
 
 async function editTextArea() {
+  const selection = window.getSelection()
+  const ranges = Array(selection.rangeCount).fill(selection).map((selection, index) => selection.getRangeAt(index))
+  const selectRanges = (selection, ranges) => {
+    selection.removeAllRanges()
+    for (const range of ranges) {
+      selection.addRange(range)
+    }
+  }
+  const boundRanges = selectRanges.bind(null, selection, ranges)
   const getActiveElement = (documentOrShadowRoot = document) => documentOrShadowRoot.activeElement.shadowRoot ? getActiveElement(documentOrShadowRoot.activeElement.shadowRoot) : documentOrShadowRoot.activeElement
   const activeElement = getActiveElement()
 
@@ -90,14 +99,9 @@ async function editTextArea() {
 
     default: {
       if (activeElement.isContentEditable) {
-        const selection = window.getSelection()
-        const ranges = Array(selection.rangeCount).fill(selection).map((selection, index) => selection.getRangeAt(index))
         selection.selectAllChildren(activeElement)
         const selectedText = selection.toString()
-        selection.removeAllRanges()
-        for (const range of ranges) {
-          selection.addRange(range)
-        }
+        boundRanges()
         const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
         if (result.status === 0 && result.output.length > 0 && result.output !== '\n' && result.output !== selectedText) {
           activeElement.addEventListener('focus', event => navigator.clipboard.writeText(result.output), { once: true })
