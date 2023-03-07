@@ -89,10 +89,12 @@ async function editTextArea() {
     case activeElement instanceof HTMLInputElement:
     case activeElement instanceof HTMLTextAreaElement: {
       const boundSelection = activeElement.setSelectionRange.bind(activeElement, activeElement.selectionStart, activeElement.selectionEnd, activeElement.selectionDirection)
-      const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: activeElement.value })
+      activeElement.select()
+      const selectedText = activeElement.value
+      const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
       if (result.status === 0 && result.output.length > 0 && result.output !== '\n' && result.output !== selectedText) {
         activeElement.value = result.output
-        boundSelection()
+        // boundSelection()
         activeElement.dispatchEvent(new Event('input'))
       }
       break
@@ -101,10 +103,10 @@ async function editTextArea() {
     case activeElement.isContentEditable: {
       selection.selectAllChildren(activeElement)
       const selectedText = selection.toString()
-      boundRanges()
+      // boundRanges()
       const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
       if (result.status === 0 && result.output.length > 0 && result.output !== '\n' && result.output !== selectedText) {
-        activeElement.addEventListener('focus', event => navigator.clipboard.writeText(result.output), { once: true })
+        navigator.clipboard.writeText(result.output)
       }
       break
     }
