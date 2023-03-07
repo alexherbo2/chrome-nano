@@ -85,9 +85,9 @@ async function editTextArea() {
   const getActiveElement = (documentOrShadowRoot = document) => documentOrShadowRoot.activeElement.shadowRoot ? getActiveElement(documentOrShadowRoot.activeElement.shadowRoot) : documentOrShadowRoot.activeElement
   const activeElement = getActiveElement()
 
-  switch (activeElement.constructor) {
-    case HTMLInputElement:
-    case HTMLTextAreaElement:
+  switch (true) {
+    case activeElement instanceof HTMLInputElement:
+    case activeElement instanceof HTMLTextAreaElement: {
       const boundSelection = activeElement.setSelectionRange.bind(activeElement, activeElement.selectionStart, activeElement.selectionEnd, activeElement.selectionDirection)
       const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: activeElement.value })
       if (result.status === 0) {
@@ -96,31 +96,23 @@ async function editTextArea() {
         activeElement.dispatchEvent(new Event('input'))
       }
       break
+    }
 
-    default: {
-      if (activeElement.isContentEditable) {
-        selection.selectAllChildren(activeElement)
-        const selectedText = selection.toString()
-        boundRanges()
-        const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
-        if (result.status === 0 && result.output.length > 0 && result.output !== '\n' && result.output !== selectedText) {
-          activeElement.addEventListener('focus', event => navigator.clipboard.writeText(result.output), { once: true })
-        }
-      } else {
-        const selection = window.getSelection()
-        switch (selection.type) {
-          case 'None':
-          case 'Caret': {
-            await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea' })
-            break
-          }
-          case 'Range': {
-            const selectedText = selection.toString()
-            await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
-            break
-          }
-        }
+    case activeElement.isContentEditable: {
+      selection.selectAllChildren(activeElement)
+      const selectedText = selection.toString()
+      boundRanges()
+      const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
+      if (result.status === 0 && result.output.length > 0 && result.output !== '\n' && result.output !== selectedText) {
+        activeElement.addEventListener('focus', event => navigator.clipboard.writeText(result.output), { once: true })
       }
+      break
+    }
+
+    case selection.type === 'Range': {
+      const selectedText = selection.toString()
+      await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
+      break
     }
   }
 }
