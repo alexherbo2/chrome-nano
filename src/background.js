@@ -90,7 +90,7 @@ async function editTextArea() {
     case activeElement instanceof HTMLTextAreaElement: {
       const boundSelection = activeElement.setSelectionRange.bind(activeElement, activeElement.selectionStart, activeElement.selectionEnd, activeElement.selectionDirection)
       const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: activeElement.value })
-      if (result.status === 0) {
+      if (result.status === 0 && result.output.length > 0 && result.output !== '\n' && result.output !== selectedText) {
         activeElement.value = result.output
         boundSelection()
         activeElement.dispatchEvent(new Event('input'))
