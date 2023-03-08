@@ -73,40 +73,18 @@ function onMenuItemClicked(info, tab) {
 }
 
 async function editTextArea() {
-  const selection = window.getSelection()
-  const ranges = Array(selection.rangeCount).fill(selection).map((selection, index) => selection.getRangeAt(index))
-  const selectRanges = (selection, ranges) => {
-    selection.removeAllRanges()
-    for (const range of ranges) {
-      selection.addRange(range)
-    }
-  }
-  const boundRanges = selectRanges.bind(null, selection, ranges)
   const getActiveElement = (documentOrShadowRoot = document) => documentOrShadowRoot.activeElement.shadowRoot ? getActiveElement(documentOrShadowRoot.activeElement.shadowRoot) : documentOrShadowRoot.activeElement
   const activeElement = getActiveElement()
+  const selection = window.getSelection()
 
   switch (true) {
     case activeElement instanceof HTMLInputElement:
     case activeElement instanceof HTMLTextAreaElement: {
-      const boundSelection = activeElement.setSelectionRange.bind(activeElement, activeElement.selectionStart, activeElement.selectionEnd, activeElement.selectionDirection)
-      activeElement.select()
       const selectedText = activeElement.value
       const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
       if (result.status === 0 && result.output.length > 0 && result.output !== '\n' && result.output !== selectedText) {
         activeElement.value = result.output
-        // boundSelection()
         activeElement.dispatchEvent(new Event('input'))
-      }
-      break
-    }
-
-    case activeElement.isContentEditable: {
-      selection.selectAllChildren(activeElement)
-      const selectedText = selection.toString()
-      // boundRanges()
-      const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
-      if (result.status === 0 && result.output.length > 0 && result.output !== '\n' && result.output !== selectedText) {
-        navigator.clipboard.writeText(result.output)
       }
       break
     }
