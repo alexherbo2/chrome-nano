@@ -73,7 +73,12 @@ function onMenuItemClicked(info, tab) {
 }
 
 async function editTextArea() {
-  const getActiveElement = (documentOrShadowRoot = document) => documentOrShadowRoot.activeElement.shadowRoot ? getActiveElement(documentOrShadowRoot.activeElement.shadowRoot) : documentOrShadowRoot.activeElement
+  const getActiveElement = (documentOrShadowRoot = document) => (
+    documentOrShadowRoot.activeElement.shadowRoot
+      ? getActiveElement(documentOrShadowRoot.activeElement.shadowRoot)
+      : documentOrShadowRoot.activeElement
+  )
+
   const activeElement = getActiveElement()
   const selection = window.getSelection()
 
@@ -82,7 +87,11 @@ async function editTextArea() {
     case activeElement instanceof HTMLTextAreaElement: {
       const selectedText = activeElement.value
       const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
-      if (result.status === 0 && result.output.length > 0 && result.output !== '\n' && result.output !== selectedText) {
+      if (
+        result.status === 0 &&
+        result.output.length > 0 && result.output !== '\n' &&
+        result.output !== selectedText
+      ) {
         activeElement.value = result.output
         activeElement.dispatchEvent(new InputEvent('input'))
       }
