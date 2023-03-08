@@ -84,7 +84,7 @@ async function editTextArea() {
       const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
       if (result.status === 0 && result.output.length > 0 && result.output !== '\n' && result.output !== selectedText) {
         activeElement.value = result.output
-        activeElement.dispatchEvent(new Event('input'))
+        activeElement.dispatchEvent(new InputEvent('input'))
       }
       break
     }
