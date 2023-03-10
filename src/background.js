@@ -20,6 +20,20 @@ function createMenuItems() {
   })
 }
 
+// Handles the initial setup when the extension is first installed or updated to a new version.
+// Reference: https://developer.chrome.com/docs/extensions/reference/runtime/#event-onInstalled
+function onInstalled(details) {
+  switch (details.reason) {
+    case 'install':
+      onInstall()
+      break
+    case 'update':
+      onUpdate(details.previousVersion)
+      break
+  }
+  createMenuItems()
+}
+
 // Handles the initial setup when the extension is first installed.
 async function onInstall() {
   const config = await configPromise
@@ -34,8 +48,23 @@ async function onUpdate(previousVersion) {
 }
 
 // Handles option changes.
+// Reference: https://developer.chrome.com/docs/extensions/reference/storage/#event-onChanged
 function onOptionsChange(changes, areaName) {
   Object.assign(nano, changes.nano.newValue)
+}
+
+// Handles messages by using a discriminator field.
+// Each message has a `type` field, and the rest of the fields, and their meaning, depend on its value.
+// Reference: https://crystal-lang.org/api/master/JSON/Serializable.html#discriminator-field
+function onMessage(message, sender, sendResponse) {
+  switch (message.type) {
+    case 'action':
+      onActionMessage(message, sender, sendResponse)
+      break
+    default:
+      sendResponse({ type: 'error', message: 'Unknown request' })
+  }
+  return true
 }
 
 // Handles action message.
@@ -50,7 +79,8 @@ function onActionMessage(message, sender, sendResponse) {
   }
 }
 
-// Handles the browser action.
+// Handles the browser action on click.
+// Reference: https://developer.chrome.com/docs/extensions/reference/action/#event-onClicked
 function onAction(tab) {
   chrome.scripting.executeScript({
     target: {
@@ -62,6 +92,7 @@ function onAction(tab) {
 }
 
 // Handles the context menu on click.
+// Reference: https://developer.chrome.com/docs/extensions/reference/contextMenus/#event-onClicked
 function onMenuItemClicked(info, tab) {
   chrome.scripting.executeScript({
     target: {
@@ -106,53 +137,10 @@ async function editTextArea() {
   }
 }
 
-// Configure nano.
-chrome.storage.sync.get(options => Object.assign(nano, options.nano))
-
-// Handle the initial setup when the extension is first installed or updated to a new version.
-// Reference: https://developer.chrome.com/docs/extensions/reference/runtime/#event-onInstalled
-chrome.runtime.onInstalled.addListener((details) => {
-  switch (details.reason) {
-    case 'install':
-      onInstall()
-      break
-    case 'update':
-      onUpdate(details.previousVersion)
-      break
-  }
-  createMenuItems()
-})
-
-// Handle option changes.
-// Reference: https://developer.chrome.com/docs/extensions/reference/storage/#event-onChanged
-chrome.storage.onChanged.addListener(onOptionsChange)
-
-// Handle the browser action on click.
-// Reference: https://developer.chrome.com/docs/extensions/reference/action/#event-onClicked
-chrome.action.onClicked.addListener(onAction)
-
-// Handle the context menu on click.
-// Reference: https://developer.chrome.com/docs/extensions/reference/contextMenus/#event-onClicked
-chrome.contextMenus.onClicked.addListener(onMenuItemClicked)
-
-// Handle messages by using a discriminator field.
-// Each message has a `type` field, and the rest of the fields, and their meaning, depend on its value.
-// Reference: https://crystal-lang.org/api/master/JSON/Serializable.html#discriminator-field
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  switch (message.type) {
-    case 'action':
-      onActionMessage(message, sender, sendResponse)
-      break
-    default:
-      sendResponse({ type: 'error', message: 'Unknown request' })
-  }
-  return true
-})
-
-// Handle long-lived connections.
+// Handles long-lived connections.
 // Use the channel name to distinguish different types of connections.
 // Reference: https://developer.chrome.com/docs/extensions/mv3/messaging/#connect
-chrome.runtime.onConnect.addListener((port) => {
+function onConnect(port) {
   switch (port.name) {
     case 'options':
       optionsWorker.onConnect(port)
@@ -160,4 +148,16 @@ chrome.runtime.onConnect.addListener((port) => {
     default:
       port.postMessage({ type: 'error', message: `Unknown type of connection: ${port.name}` })
   }
-})
+}
+
+// Configure nano.
+chrome.storage.sync.get(options => Object.assign(nano, options.nano))
+
+// Set up listeners.
+// Reference: https://developer.chrome.com/docs/extensions/mv3/service_workers/#listeners
+chrome.runtime.onInstalled.addListener(onInstalled)
+chrome.storage.onChanged.addListener(onOptionsChange)
+chrome.action.onClicked.addListener(onAction)
+chrome.contextMenus.onClicked.addListener(onMenuItemClicked)
+chrome.runtime.onMessage.addListener(onMessage)
+chrome.runtime.onConnect.addListener(onConnect)
