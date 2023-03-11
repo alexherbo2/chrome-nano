@@ -111,6 +111,19 @@ async function editTextArea() {
     action: 'editTextArea',
     input
   })
+  // Inserts the specified text by dispatching a clipboard paste event.
+  const dispatchPaste = (eventTarget, text) => {
+    const dataTransfer = new DataTransfer
+    dataTransfer.setData('text/plain', text)
+
+    eventTarget.dispatchEvent(
+      new ClipboardEvent('paste', {
+        clipboardData: dataTransfer,
+        bubbles: true,
+        cancelable: true
+      })
+    )
+  }
   // Gets active element with shadow DOM support.
   // Implementation reference: https://github.com/lydell/LinkHints/blob/main/src/worker/ElementManager.ts
   const getActiveElement = documentOrShadowRoot => (
@@ -132,6 +145,24 @@ async function editTextArea() {
       ) {
         activeElement.value = commandResult.output
         activeElement.dispatchEvent(new InputEvent('input'))
+      }
+      break
+    }
+
+    case activeElement.isContentEditable: {
+      selection.selectAllChildren(activeElement)
+      const selectedText = selection.toString()
+      selection.removeAllRanges()
+      const commandResult = await editTextArea(selectedText)
+      if (
+        commandResult.status === 0 &&
+        commandResult.output !== selectedText
+      ) {
+        selection.selectAllChildren(activeElement)
+        // Note: Chrome won’t replace selected text properly without an event loop iteration.
+        setTimeout(() => {
+          dispatchPaste(activeElement, commandResult.output)
+        }, 200)
       }
       break
     }
