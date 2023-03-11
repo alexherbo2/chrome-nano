@@ -126,7 +126,6 @@ async function editTextArea() {
       const commandResult = await editTextArea(selectedText)
       if (
         commandResult.status === 0 &&
-        commandResult.output.length > 0 && commandResult.output !== '\n' &&
         commandResult.output !== selectedText
       ) {
         activeElement.value = commandResult.output
