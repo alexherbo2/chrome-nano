@@ -104,30 +104,30 @@ function onMenuItemClicked(info, tab) {
 }
 
 async function editTextArea() {
-  const getActiveElement = (documentOrShadowRoot = document) => (
+  const editTextArea = input => chrome.runtime.sendMessage({
+    type: 'action',
+    action: 'editTextArea',
+    input
+  })
+  const getActiveElement = documentOrShadowRoot =>
     documentOrShadowRoot.activeElement.shadowRoot
       ? getActiveElement(documentOrShadowRoot.activeElement.shadowRoot)
       : documentOrShadowRoot.activeElement
-  )
 
-  const activeElement = getActiveElement()
+  const activeElement = getActiveElement(document)
   const selection = window.getSelection()
 
   switch (true) {
     case activeElement instanceof HTMLInputElement:
     case activeElement instanceof HTMLTextAreaElement: {
       const selectedText = activeElement.value
-      const result = await chrome.runtime.sendMessage({
-        type: 'action',
-        action: 'editTextArea',
-        input: selectedText
-      })
+      const commandResult = await editTextArea(selectedText)
       if (
-        result.status === 0 &&
-        result.output.length > 0 && result.output !== '\n' &&
-        result.output !== selectedText
+        commandResult.status === 0 &&
+        commandResult.output.length > 0 && commandResult.output !== '\n' &&
+        commandResult.output !== selectedText
       ) {
-        activeElement.value = result.output
+        activeElement.value = commandResult.output
         activeElement.dispatchEvent(new InputEvent('input'))
       }
       break
@@ -135,11 +135,7 @@ async function editTextArea() {
 
     case selection.type === 'Range': {
       const selectedText = selection.toString()
-      await chrome.runtime.sendMessage({
-        type: 'action',
-        action: 'editTextArea',
-        input: selectedText
-      })
+      await editTextArea(selectedText)
       break
     }
   }
