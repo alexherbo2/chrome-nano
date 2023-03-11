@@ -109,11 +109,11 @@ async function editTextArea() {
     action: 'editTextArea',
     input
   })
-  const getActiveElement = documentOrShadowRoot =>
+  const getActiveElement = documentOrShadowRoot => (
     documentOrShadowRoot.activeElement.shadowRoot
       ? getActiveElement(documentOrShadowRoot.activeElement.shadowRoot)
       : documentOrShadowRoot.activeElement
-
+  )
   const activeElement = getActiveElement(document)
   const selection = window.getSelection()
 
