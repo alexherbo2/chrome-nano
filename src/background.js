@@ -142,7 +142,7 @@ async function editTextArea() {
 }
 
 // Handles long-lived connections.
-// Use the channel name to distinguish different types of connections.
+// Uses the channel name to distinguish different types of connections.
 // Reference: https://developer.chrome.com/docs/extensions/mv3/messaging/#connect
 function onConnect(port) {
   switch (port.name) {
