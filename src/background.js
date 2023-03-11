@@ -117,7 +117,11 @@ async function editTextArea() {
     case activeElement instanceof HTMLInputElement:
     case activeElement instanceof HTMLTextAreaElement: {
       const selectedText = activeElement.value
-      const result = await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
+      const result = await chrome.runtime.sendMessage({
+        type: 'action',
+        action: 'editTextArea',
+        input: selectedText
+      })
       if (
         result.status === 0 &&
         result.output.length > 0 && result.output !== '\n' &&
@@ -131,7 +135,11 @@ async function editTextArea() {
 
     case selection.type === 'Range': {
       const selectedText = selection.toString()
-      await chrome.runtime.sendMessage({ type: 'action', action: 'editTextArea', input: selectedText })
+      await chrome.runtime.sendMessage({
+        type: 'action',
+        action: 'editTextArea',
+        input: selectedText
+      })
       break
     }
   }
