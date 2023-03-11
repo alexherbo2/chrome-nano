@@ -104,13 +104,15 @@ function onMenuItemClicked(info, tab) {
 }
 
 // Edits text areas in webpages with a text editor program—such as nano.
-// Uses message passing to open the editor from the content script.
 async function editTextArea() {
+  // Uses message passing to open the editor from the content script.
   const editTextArea = input => chrome.runtime.sendMessage({
     type: 'action',
     action: 'editTextArea',
     input
   })
+  // Gets active element with shadow DOM support.
+  // Implementation reference: https://github.com/lydell/LinkHints/blob/main/src/worker/ElementManager.ts
   const getActiveElement = documentOrShadowRoot => (
     documentOrShadowRoot.activeElement.shadowRoot
       ? getActiveElement(documentOrShadowRoot.activeElement.shadowRoot)
