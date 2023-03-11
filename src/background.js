@@ -145,10 +145,9 @@ async function editTextArea() {
         commandResult.status === 0 &&
         commandResult.output !== selectedText
       ) {
+        activeElement.focus()
         activeElement.value = commandResult.output
         activeElement.dispatchEvent(new InputEvent('input'))
-        activeElement.focus()
-        activeElement.select()
       }
       break
     }
@@ -170,7 +169,6 @@ async function editTextArea() {
         // Note: Chrome won’t replace selected text properly without an event loop iteration.
         await new Promise(resolve => setTimeout(resolve, 200))
         dispatchPaste(activeElement, commandResult.output)
-        selection.selectAllChildren(activeElement)
       }
       break
     }
