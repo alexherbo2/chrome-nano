@@ -103,6 +103,8 @@ function onMenuItemClicked(info, tab) {
   })
 }
 
+// Edits text areas in webpages with a text editor program—such as nano.
+// Uses message passing to open the editor from the content script.
 async function editTextArea() {
   const editTextArea = input => chrome.runtime.sendMessage({
     type: 'action',
