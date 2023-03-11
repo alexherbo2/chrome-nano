@@ -137,6 +137,8 @@ async function editTextArea() {
   switch (true) {
     case activeElement instanceof HTMLInputElement:
     case activeElement instanceof HTMLTextAreaElement: {
+      activeElement.focus()
+      activeElement.select()
       const selectedText = activeElement.value
       const commandResult = await editTextArea(selectedText)
       if (
@@ -145,24 +147,30 @@ async function editTextArea() {
       ) {
         activeElement.value = commandResult.output
         activeElement.dispatchEvent(new InputEvent('input'))
+        activeElement.focus()
+        activeElement.select()
       }
       break
     }
 
     case activeElement.isContentEditable: {
+      const selection = window.getSelection()
       selection.selectAllChildren(activeElement)
       const selectedText = selection.toString()
-      selection.removeAllRanges()
+      if (selectedText === '') {
+        selection.collapseToEnd()
+      }
       const commandResult = await editTextArea(selectedText)
       if (
         commandResult.status === 0 &&
         commandResult.output !== selectedText
       ) {
+        activeElement.focus()
         selection.selectAllChildren(activeElement)
         // Note: Chrome won’t replace selected text properly without an event loop iteration.
-        setTimeout(() => {
-          dispatchPaste(activeElement, commandResult.output)
-        }, 200)
+        await new Promise(resolve => setTimeout(resolve, 200))
+        dispatchPaste(activeElement, commandResult.output)
+        selection.selectAllChildren(activeElement)
       }
       break
     }
