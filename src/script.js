@@ -9,6 +9,7 @@ export async function editTextArea() {
     action: 'editTextArea',
     input
   })
+
   // Inserts the specified text by dispatching a clipboard paste event.
   const dispatchPaste = (eventTarget, text) => {
     const dataTransfer = new DataTransfer
@@ -22,6 +23,7 @@ export async function editTextArea() {
       })
     )
   }
+
   // Gets active element with shadow DOM support.
   // Implementation reference: https://github.com/lydell/LinkHints/blob/main/src/worker/ElementManager.ts
   const getActiveElement = documentOrShadowRoot => (
@@ -29,6 +31,7 @@ export async function editTextArea() {
       ? getActiveElement(documentOrShadowRoot.activeElement.shadowRoot)
       : documentOrShadowRoot.activeElement
   )
+
   const activeElement = getActiveElement(document)
   const selection = window.getSelection()
 
@@ -48,6 +51,8 @@ export async function editTextArea() {
       break
     }
 
+    // Inserting text in content editable elements _usually works_ by dispatching a clipboard event, or
+    // writing text to the system clipboard and let user paste it.
     case activeElement.isContentEditable: {
       const selection = window.getSelection()
       const ranges = Array(selection.rangeCount).fill(selection).map((selection, index) => selection.getRangeAt(index))
@@ -68,6 +73,9 @@ export async function editTextArea() {
         setTimeout(() => {
           dispatchPaste(activeElement, commandResult.output)
         }, 200)
+
+        // Also write the command output to the system clipboard.
+        navigator.clipboard.writeText(commandResult.output)
       }
       break
     }
