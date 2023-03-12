@@ -4,8 +4,8 @@
 // Edits the active text area with a text editor program—such as nano.
 async function editTextArea() {
   // Uses message passing to open the editor from the content script.
-  function editTextArea(input) {
-    chrome.runtime.sendMessage({
+  async function editTextArea(input) {
+    return chrome.runtime.sendMessage({
       type: 'action',
       action: 'editTextArea',
       input
