@@ -5,6 +5,7 @@
 // Messaging: https://developer.chrome.com/docs/extensions/mv3/messaging/
 
 import nano from './nano.js'
+import { editTextArea } from './script.js'
 import optionsWorker from './options/service_worker.js'
 
 // Retrieve the default config.
@@ -101,86 +102,6 @@ function onMenuItemClicked(info, tab) {
     },
     func: editTextArea
   })
-}
-
-// Edits text areas in webpages with a text editor program—such as nano.
-async function editTextArea() {
-  // Uses message passing to open the editor from the content script.
-  const editTextArea = input => chrome.runtime.sendMessage({
-    type: 'action',
-    action: 'editTextArea',
-    input
-  })
-  // Inserts the specified text by dispatching a clipboard paste event.
-  const dispatchPaste = (eventTarget, text) => {
-    const dataTransfer = new DataTransfer
-    dataTransfer.setData('text/plain', text)
-
-    eventTarget.dispatchEvent(
-      new ClipboardEvent('paste', {
-        clipboardData: dataTransfer,
-        bubbles: true,
-        cancelable: true
-      })
-    )
-  }
-  // Gets active element with shadow DOM support.
-  // Implementation reference: https://github.com/lydell/LinkHints/blob/main/src/worker/ElementManager.ts
-  const getActiveElement = documentOrShadowRoot => (
-    documentOrShadowRoot.activeElement.shadowRoot
-      ? getActiveElement(documentOrShadowRoot.activeElement.shadowRoot)
-      : documentOrShadowRoot.activeElement
-  )
-  const activeElement = getActiveElement(document)
-  const selection = window.getSelection()
-
-  switch (true) {
-    case activeElement instanceof HTMLInputElement:
-    case activeElement instanceof HTMLTextAreaElement: {
-      activeElement.focus()
-      activeElement.select()
-      const selectedText = activeElement.value
-      const commandResult = await editTextArea(selectedText)
-      if (
-        commandResult.status === 0 &&
-        commandResult.output !== selectedText
-      ) {
-        activeElement.focus()
-        activeElement.value = commandResult.output
-        activeElement.dispatchEvent(new InputEvent('input'))
-        activeElement.setSelectionRange(commandResult.output.length, commandResult.output.length)
-      }
-      break
-    }
-
-    case activeElement.isContentEditable: {
-      const selection = window.getSelection()
-      selection.selectAllChildren(activeElement)
-      const selectedText = selection.toString()
-      if (selectedText === '') {
-        selection.collapseToEnd()
-      }
-      const commandResult = await editTextArea(selectedText)
-      if (
-        commandResult.status === 0 &&
-        commandResult.output !== selectedText
-      ) {
-        activeElement.focus()
-        selection.selectAllChildren(activeElement)
-        // Note: Chrome won’t replace selected text properly without an event loop iteration.
-        await new Promise(resolve => setTimeout(resolve, 200))
-        dispatchPaste(activeElement, commandResult.output)
-        selection.collapseToEnd()
-      }
-      break
-    }
-
-    case selection.type === 'Range': {
-      const selectedText = selection.toString()
-      await editTextArea(selectedText)
-      break
-    }
-  }
 }
 
 // Handles long-lived connections.
