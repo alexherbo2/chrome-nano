@@ -2,16 +2,18 @@
 // Reference: https://developer.chrome.com/docs/extensions/mv3/content_scripts/
 
 // Edits the active text area with a text editor program—such as nano.
-export async function editTextArea() {
+async function editTextArea() {
   // Uses message passing to open the editor from the content script.
-  const editTextArea = input => chrome.runtime.sendMessage({
-    type: 'action',
-    action: 'editTextArea',
-    input
-  })
+  function editTextArea(input) {
+    chrome.runtime.sendMessage({
+      type: 'action',
+      action: 'editTextArea',
+      input
+    })
+  }
 
   // Dispatches a paste event with the given text.
-  const dispatchPaste = (eventTarget, text) => {
+  function dispatchPaste(eventTarget, text) {
     const dataTransfer = new DataTransfer
     dataTransfer.setData('text/plain', text)
 
@@ -26,11 +28,11 @@ export async function editTextArea() {
 
   // Gets active element with shadow DOM support.
   // Implementation reference: https://github.com/lydell/LinkHints/blob/main/src/worker/ElementManager.ts
-  const getActiveElement = documentOrShadowRoot => (
-    documentOrShadowRoot.activeElement.shadowRoot
+  function getActiveElement(documentOrShadowRoot) {
+    return documentOrShadowRoot.activeElement.shadowRoot
       ? getActiveElement(documentOrShadowRoot.activeElement.shadowRoot)
       : documentOrShadowRoot.activeElement
-  )
+  }
 
   const activeElement = getActiveElement(document)
   const selection = window.getSelection()
@@ -87,3 +89,5 @@ export async function editTextArea() {
     }
   }
 }
+
+export default { editTextArea }
