@@ -10,7 +10,7 @@ export async function editTextArea() {
     input
   })
 
-  // Inserts the specified text by dispatching a clipboard paste event.
+  // Dispatches a paste event with the given text.
   const dispatchPaste = (eventTarget, text) => {
     const dataTransfer = new DataTransfer
     dataTransfer.setData('text/plain', text)
