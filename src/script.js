@@ -2,7 +2,7 @@
 // Reference: https://developer.chrome.com/docs/extensions/mv3/content_scripts/
 
 // Edits the active text area with a text editor program—such as nano.
-async function editTextArea() {
+export async function editTextArea() {
   // Uses message passing to open the editor from the content script.
   async function editTextArea(input) {
     return chrome.runtime.sendMessage({
@@ -89,5 +89,3 @@ async function editTextArea() {
     }
   }
 }
-
-export default { editTextArea }
