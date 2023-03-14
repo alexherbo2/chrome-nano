@@ -1,7 +1,7 @@
 // This module contains content script functions that run in the context of web pages.
 // Reference: https://developer.chrome.com/docs/extensions/mv3/content_scripts/
 
-// Edits the active text area with a text editor program—such as nano.
+// A self-contained script that lets you edit text areas in webpages with a text editor program—such as nano.
 export async function editTextArea() {
   // Uses message passing to open the editor from the content script.
   async function editTextArea(input) {
